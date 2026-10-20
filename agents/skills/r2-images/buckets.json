@@ -1,0 +1,58 @@
+{
+  "defaultGroup": "images",
+  "manifest": true,
+  "buckets": {
+    "personal": {
+      "name": "ac-media-personal",
+      "publicBase": "https://pub-2ba6a684efd44505b97000e050ebacba.r2.dev",
+      "jurisdiction": "eu"
+    },
+    "clients": {
+      "name": "ac-media-client",
+      "publicBase": "https://clients.cdn.acrichter.com",
+      "jurisdiction": "eu"
+    }
+  },
+  "routes": [
+    {
+      "match": "dev/client-projects/*",
+      "bucket": "clients",
+      "prefix": "{1}"
+    },
+    {
+      "match": "dev/beyond925/*",
+      "bucket": "clients",
+      "prefix": "beyond925/{1}"
+    },
+    {
+      "match": "dev/websites/*",
+      "bucket": "personal",
+      "prefix": "{1}"
+    },
+    {
+      "match": "dev/prvt/*",
+      "bucket": "personal",
+      "prefix": "{1}"
+    },
+    {
+      "match": "dev/packages/*",
+      "bucket": "personal",
+      "prefix": "{1}"
+    },
+    {
+      "match": "dev/extensions/*",
+      "bucket": "personal",
+      "prefix": "{1}"
+    },
+    {
+      "match": "dev/tools/*",
+      "bucket": "personal",
+      "prefix": "{1}"
+    },
+    {
+      "match": "dev/ml/*",
+      "bucket": "personal",
+      "prefix": "{1}"
+    }
+  ]
+}

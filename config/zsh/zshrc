@@ -1,0 +1,21 @@
+PS1='[%2d] $ '
+
+# ohmyzsh
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME="robbyrussell"
+plugins=(git)
+[ -f "$ZSH/oh-my-zsh.sh" ] && source "$ZSH/oh-my-zsh.sh"
+
+source "$HOME/.config/shell/common.sh"
+
+command -v direnv >/dev/null && eval "$(direnv hook zsh)"
+command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# Google Cloud SDK
+if [ -f "$HOME/Downloads/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/Downloads/google-cloud-sdk/path.zsh.inc"; fi
+if [ -f "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc"; fi
+
+# These call functions from omz's git plugin, so they're zsh-only.
+alias ggpnp='ggl && ggp'
+alias ggpur='ggu'
