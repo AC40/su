@@ -15,6 +15,21 @@
   },
   "routes": [
     {
+      "remote": "collatio-app/collatio_app",
+      "bucket": "personal",
+      "prefix": "collatio"
+    },
+    {
+      "match": "collatio.de",
+      "bucket": "personal",
+      "prefix": "collatio"
+    },
+    {
+      "match": "**/collatio.de",
+      "bucket": "personal",
+      "prefix": "collatio"
+    },
+    {
       "match": "dev/client-projects/*",
       "bucket": "clients",
       "prefix": "{1}"

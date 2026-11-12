@@ -69,14 +69,20 @@ the prefix** before committing. After that it is fixed and reviewable in a diff.
 
 Default routes (see `buckets.json` to add more):
 
-| Path | Bucket | Prefix |
+| Path or repo | Bucket | Prefix |
 |---|---|---|
+| **Collatio**: any clone or worktree of `collatio-app/Collatio_App`, on every machine (`~/dev/collatio.de`, `~/.t3/worktrees/t3-<hash>/…`, `.claude/worktrees/…`) | `personal` | `collatio` |
 | `~/dev/client-projects/<x>` | `clients` | `<x>` |
 | `~/dev/beyond925/<x>` | `clients` | `beyond925/<x>` |
 | `~/dev/websites/<x>`, `prvt`, `packages`, `extensions`, `tools`, `ml` | `personal` | `<x>` |
 
 For a client with several projects, use a two-level prefix:
 `<client>/<project>` — e.g. `remm-augenoptik/website`.
+
+A route has either `match` (a path glob under `$HOME`: `*` one segment, `**`
+several) or `remote` (`owner/repo` of the checkout's `origin`, any host or
+protocol, case-insensitive). A `remote` route follows a repo wherever it is
+cloned, which a path cannot: agent worktrees sit in folders named by a hash.
 
 ## Secret setup (one-time)
 

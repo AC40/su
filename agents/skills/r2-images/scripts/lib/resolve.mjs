@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, resolve, sep } from "node:path";
@@ -68,6 +69,34 @@ const routeMatcher = (pattern) => {
 const applyTemplate = (template, captures) =>
   template.replace(/\{(\d+)\}/g, (_, index) => captures[Number(index) - 1] ?? "");
 
+/**
+ * The git checkout `start` sits in: its top level and its origin URL, or null
+ * outside git. A worktree's path often names nothing (~/.t3/worktrees/t3-<hash>),
+ * its remote always names the repo.
+ */
+const gitCheckout = (start) => {
+  const git = (...args) =>
+    execFileSync("git", ["-C", start, ...args], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+  try {
+    return { root: git("rev-parse", "--show-toplevel"), origin: git("remote", "get-url", "origin") };
+  } catch {
+    return null;
+  }
+};
+
+/** "owner/repo" as a remote URL names it, any host or protocol, lower-cased. */
+const remoteSlug = (url) =>
+  url
+    .toLowerCase()
+    .replace(/\.git$/, "")
+    .replace(/\/+$/, "")
+    .split(/[/:]/)
+    .slice(-2)
+    .join("/");
+
 /** Walks up from `start` looking for a committed .r2.json; stops at $HOME. */
 const findProjectConfig = (start) => {
   let dir = start;
@@ -122,16 +151,29 @@ export const resolveTarget = ({ cwd = process.cwd(), bucket, prefix } = {}) => {
   }
 
   if (!logicalBucket || !bucketPrefix) {
+    let checkout;
     for (const route of registry.routes ?? []) {
-      const match = routeMatcher(route.match).exec(start);
-      if (!match) {
-        continue;
+      let captures = [];
+      let root;
+      if (route.remote) {
+        // A repo route: matches every clone and worktree of it, wherever it lives.
+        checkout = checkout === undefined ? gitCheckout(start) : checkout;
+        if (!checkout || remoteSlug(checkout.origin) !== route.remote.toLowerCase()) {
+          continue;
+        }
+        root = checkout.root;
+      } else {
+        const match = routeMatcher(route.match).exec(start);
+        if (!match) {
+          continue;
+        }
+        captures = match.slice(1);
+        root = match[0].replace(/\/$/, "");
       }
-      const captures = match.slice(1);
       logicalBucket = logicalBucket ?? route.bucket;
       bucketPrefix = bucketPrefix ?? applyTemplate(route.prefix, captures);
       if (!found) {
-        projectRoot = match[0].replace(/\/$/, "");
+        projectRoot = root;
         source = bucket || prefix ? "flags+route" : "route";
       }
       break;
@@ -143,7 +185,7 @@ export const resolveTarget = ({ cwd = process.cwd(), bucket, prefix } = {}) => {
       `Cannot determine an R2 destination for ${start}.`,
       "",
       "No --bucket/--prefix given, no .r2.json found walking up to $HOME,",
-      "and no route in buckets.json matches this path.",
+      "and no route in buckets.json matches this path or its git remote.",
       "",
       "Fix by either:",
       `  1. writing ${PROJECT_CONFIG} in the project root:`,
