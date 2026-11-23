@@ -45,6 +45,18 @@ wake-al() {
   ssh bp wakeonlan 1c:1b:0d:9e:d8:b5
 }
 
+# Sync skills and config to every machine: su-sync push | pull | status | autoupdate
+su-sync() {
+  "${SU_REPO:-$HOME/dev/su}/scripts/sync.sh" "$@"
+}
+
+# Open a rex window in the current directory: rexhere [session]
+# Without a session name, pick one with fzf.
+rexhere() {
+  local s="${1:-$(rex ls | tail -n +2 | fzf --prompt='session> ' | awk '{print $1}')}"
+  [ -n "$s" ] && rex window new -s "$s" -c "$PWD"
+}
+
 # oh-my-zsh defines these; bash needs its own.
 if ! type git_main_branch >/dev/null 2>&1; then
   git_main_branch() {

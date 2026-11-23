@@ -18,6 +18,14 @@ backup() {
   warn "backed up $target -> $BACKUP_DIR/$(basename "$target")"
 }
 
+# keep_existing PATH: true when SU_NO_REPLACE=1 and PATH exists. Unattended
+# updates set it, so only an explicit ./setup.sh replaces files.
+keep_existing() {
+  [ "${SU_NO_REPLACE:-0}" = 1 ] || return 1
+  [ -e "$1" ] || [ -L "$1" ] || return 1
+  warn "kept $1 (not replaced; run ./setup.sh to replace it)"
+}
+
 # link SRC DST: symlink DST to SRC, backing up whatever was at DST.
 link() {
   local src="$1" dst="$2"
@@ -25,6 +33,7 @@ link() {
     ok "$dst already linked"
     return 0
   fi
+  keep_existing "$dst" && return 0
   backup "$dst"
   mkdir -p "$(dirname "$dst")"
   ln -s "$src" "$dst"

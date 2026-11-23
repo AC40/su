@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Set up a machine: ./setup.sh [--skip-cli] [--skip-apps] [--skip-dotfiles] [--skip-agents]
+# Set up a machine: ./setup.sh [--skip-cli] [--skip-apps] [--skip-dotfiles] [--skip-agents] [--quiet]
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,13 +10,14 @@ REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$REPO/lib/dotfiles.sh"
 . "$REPO/lib/agents.sh"
 
-do_cli=1 do_apps=1 do_dotfiles=1 do_agents=1
+do_cli=1 do_apps=1 do_dotfiles=1 do_agents=1 quiet=0
 for arg in "$@"; do
   case "$arg" in
     --skip-cli) do_cli=0 ;;
     --skip-apps) do_apps=0 ;;
     --skip-dotfiles) do_dotfiles=0 ;;
     --skip-agents) do_agents=0 ;;
+    --quiet) quiet=1 ;;
     -h | --help)
       sed -n '2p' "$0"
       exit 0
@@ -45,6 +46,7 @@ if [ "$do_agents" = 1 ]; then install_agents; fi
 
 info "Done."
 [ -d "$BACKUP_DIR" ] && warn "Replaced files were moved to $BACKUP_DIR"
+[ "$quiet" = 1 ] && exit 0
 cat <<'EOF'
 
 Next steps:

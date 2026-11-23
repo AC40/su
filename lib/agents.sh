@@ -13,6 +13,7 @@ install_agents() {
     name="$(basename "$dir")"
     # A symlink here would make rsync write through to wherever it points.
     if [ -L "$HOME/.agents/skills/$name" ]; then
+      keep_existing "$HOME/.agents/skills/$name" && continue
       backup "$HOME/.agents/skills/$name"
     fi
     rsync -a "$dir" "$HOME/.agents/skills/$name/"

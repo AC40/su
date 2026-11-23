@@ -1,0 +1,9 @@
+# Machines that `su-sync push` updates over SSH, one per line.
+# Format: <ssh host> [repo path]      (the path defaults to ~/dev/su)
+# The host is a name from ~/.ssh/config or a Tailscale name. The machine
+# you run su-sync on is skipped. Offline machines are skipped too; give them
+# `su-sync autoupdate` so they catch up when they start.
+al
+bp
+acp
+ubuntubook
