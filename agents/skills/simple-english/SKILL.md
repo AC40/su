@@ -1,7 +1,7 @@
 ---
 name: simple-english
 description: |
-  Write or rewrite text in plain, layman-readable English in the spirit of
+  Always apply to your output and written documents. Write or rewrite text in plain, layman-readable English in the spirit of
   ASD-STE100 Simplified Technical English: short sentences, active voice,
   simple tenses, one word one meaning, condition before command, every
   technical term defined at first use, no AI slop. Default mode is Plain.
